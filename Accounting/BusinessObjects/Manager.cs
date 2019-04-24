@@ -1,33 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Accounting.BusinessObjects
 {
-    public class Manager:Employee
+    public class Manager:BaseEmployee
     {
         public const decimal Percent = 0.03m;
 
-        public Manager(int salary) : base(salary)
+        public Manager(int salaryPerHour) : base(salaryPerHour)
         {
         }
 
-        List<Employee> _employees = new List<Employee>();
+        private List<BaseEmployee> employees = new List<BaseEmployee>();
 
-        public override decimal CalculateSalary()
+        public override decimal CalculateSalary(DateTime startDateTime, DateTime endDateTime)
         {
             decimal employeesSalarySum = 0;
-            foreach (var employee in _employees)
+            foreach (var employee in employees)
             {
-                foreach (var tl in employee._timeLog)
-                {
-                    employeesSalarySum += employee.Salary * tl.Hours;
-                }
+                employeesSalarySum += employee.CalculateSalary(startDateTime, endDateTime);
             }
 
-            return base.CalculateSalary() + employeesSalarySum * Percent * Percent;
+            return CalculateBaseSalary(startDateTime, endDateTime) + employeesSalarySum * Percent;
+        }
+
+        public void AddEmployee(BaseEmployee baseEmployee)
+        {
+            if(!employees.Contains(baseEmployee) && baseEmployee != this)
+                employees.Add(baseEmployee);
         }
     }
 }

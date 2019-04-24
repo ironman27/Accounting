@@ -6,24 +6,15 @@ using System.Threading.Tasks;
 
 namespace Accounting.BusinessObjects
 {
-    public class Employee
+    public class Employee : BaseEmployee
     {
-        public Employee(decimal salary)
+        public Employee(decimal salaryPerHour) : base(salaryPerHour)
         {
-            Salary = salary;
         }
-
-        public decimal Salary { get; set; }
-        public List<TimeLog> _timeLog = new List<TimeLog>();
-
-        public virtual decimal CalculateSalary()
+        
+        public override decimal CalculateSalary(DateTime startDateTime, DateTime endDateTime)
         {
-            decimal sum = 0;
-            foreach (var timeLog in _timeLog)
-            {
-                sum += timeLog.Hours * Salary;
-            }
-            return sum;
+            return CalculateBaseSalary(startDateTime, endDateTime);
         }
     }
 }
