@@ -1,36 +1,43 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Accounting.BusinessObjects
 {
     public abstract class BaseEmployee
     {
-        private decimal _salaryPerHour;
-        private List<TimeLog> _timeLog = new List<TimeLog>();
+        private List<TimeLog> TimeLogList;
 
         protected BaseEmployee(decimal salaryPerHour)
         {
-            _salaryPerHour = salaryPerHour;
+            SalaryPerHour = salaryPerHour;
+            TimeLogList = new List<TimeLog>();
         }
 
-        public abstract decimal CalculateSalary(DateTime startDateTime, DateTime endDateTime);
+        private decimal _salaryPerHour;
 
-        protected decimal CalculateBaseSalary(DateTime startDateTime, DateTime enDateTime)
+        public decimal SalaryPerHour
         {
-            decimal sum = 0;
-            foreach (var timeLog in _timeLog.Where(t => t.DateTime >= startDateTime && t.DateTime <= enDateTime))
-            {
-                sum += timeLog.Hours * _salaryPerHour;
-            }
-            return sum;
+            get => _salaryPerHour;
+            set => _salaryPerHour = value;
         }
 
         public void AddTimeLog(TimeLog timeLog)
         {
-            _timeLog.Add(timeLog);
+            if (!TimeLogList.Exists(t => t.DateTime == timeLog.DateTime))
+            {
+                TimeLogList.Add(timeLog);
+            }
+        }
+
+        public virtual decimal CalculateSalary(DateTime startDateTime, DateTime endDateTime)
+        {
+            decimal sum = 0;
+            foreach (var timeLog in TimeLogList.Where(t => t.DateTime >= startDateTime && t.DateTime <= endDateTime))
+            {
+                sum += timeLog.Hours * _salaryPerHour;
+            }
+            return sum;
         }
     }
 }

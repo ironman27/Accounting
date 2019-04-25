@@ -46,7 +46,6 @@
     <Compile Include="BusinessObjects\BaseEmployee.cs" />
     <Compile Include="BusinessObjects\Employee.cs" />
     <Compile Include="BusinessObjects\Manager.cs" />
-    <Compile Include="BusinessObjects\Salary.cs" />
     <Compile Include="BusinessObjects\TimeLog.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Accounting.BusinessObjects
 {
@@ -14,7 +10,23 @@ namespace Accounting.BusinessObjects
             Hours = hours;
         }
 
-        public DateTime DateTime { get; set; }
-        public int Hours { get; set; }
+        private DateTime _dateTime;
+
+        public DateTime DateTime
+        {
+            get => _dateTime;
+            set => _dateTime = value;
+        }
+
+        private int _hours;
+        public int Hours
+        {
+            get => _hours;
+            set
+            {
+                if (value >= 0 && value <= 24)
+                    _hours = value;
+            }
+        }
     }
 }
