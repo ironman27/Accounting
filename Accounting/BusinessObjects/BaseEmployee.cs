@@ -6,12 +6,12 @@ namespace Accounting.BusinessObjects
 {
     public abstract class BaseEmployee
     {
-        private List<TimeLog> TimeLogList;
+        private readonly List<TimeLog> _timeLogList;
 
         protected BaseEmployee(decimal salaryPerHour)
         {
             SalaryPerHour = salaryPerHour;
-            TimeLogList = new List<TimeLog>();
+            _timeLogList = new List<TimeLog>();
         }
 
         private decimal _salaryPerHour;
@@ -24,16 +24,16 @@ namespace Accounting.BusinessObjects
 
         public void AddTimeLog(TimeLog timeLog)
         {
-            if (!TimeLogList.Exists(t => t.DateTime == timeLog.DateTime))
+            if (!_timeLogList.Exists(t => t.DateTime == timeLog.DateTime))
             {
-                TimeLogList.Add(timeLog);
+                _timeLogList.Add(timeLog);
             }
         }
 
         public virtual decimal CalculateSalary(DateTime startDateTime, DateTime endDateTime)
         {
             decimal sum = 0;
-            foreach (var timeLog in TimeLogList.Where(t => t.DateTime >= startDateTime && t.DateTime <= endDateTime))
+            foreach (var timeLog in _timeLogList.Where(t => t.DateTime >= startDateTime && t.DateTime <= endDateTime))
             {
                 sum += timeLog.Hours * _salaryPerHour;
             }

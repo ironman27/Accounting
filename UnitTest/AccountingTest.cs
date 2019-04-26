@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Accounting.BusinessObjects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -7,48 +8,53 @@ namespace UnitTest
     [TestClass]
     public class AccountingTest
     {
+        #region Variables
+
         private BaseEmployee _employee01;
         private BaseEmployee _employee02;
         private BaseEmployee _employee03;
         private BaseEmployee _employee04;
 
-        private BaseEmployee _employee21;
-        private BaseEmployee _employee22;
-        private BaseEmployee _employee23;
-        private BaseEmployee _employee24;
+        private BaseEmployee _employee211;
+        private BaseEmployee _employee212;
+        private BaseEmployee _employee213;
+        private BaseEmployee _employee214;
+
+        private BaseEmployee _employee221;
+        private BaseEmployee _employee222;
+        private BaseEmployee _employee223;
+        private BaseEmployee _employee224;
 
         private BaseEmployee _employee31;
         private BaseEmployee _employee32;
         private BaseEmployee _employee33;
         private BaseEmployee _employee34;
 
-        private Manager _workingManagerWithEmployees;
-        private Manager _workingManagerWithoutEmployees;
-        private Manager _notWorkingManagerWithEmployees;
-        private Manager _notWorkingManagerWithoutEmployees;
+        private BaseEmployee _workingManagerWithEmployees;
+        private BaseEmployee _workingManagerWithoutEmployees;
+        private BaseEmployee _notWorkingManagerWithEmployees;
+        private BaseEmployee _notWorkingManagerWithoutEmployees;
 
         private Manager _manager31;
         private Manager _manager32;
 
         private BaseEmployee _employee41;
 
+        #endregion Variables
+
         [TestInitialize]
         public void Init()
         {
+            #region CalculateEmployeeSalaryTest
+
             _employee01 = new Employee(4);
             _employee02 = new Employee(4);
             _employee03 = new Employee(4);
             _employee04 = new Employee(4);
 
-            _employee21 = new Employee(4);
-            _employee22 = new Employee(4);
-            _employee23 = new Employee(4);
-            _employee24 = new Employee(4);
-
             for (int i = 1; i <= 31; i++)
             {
                 _employee01.AddTimeLog(new TimeLog(new DateTime(2019, 3, i), 8));
-                _employee21.AddTimeLog(new TimeLog(new DateTime(2019, 3, i), 8));
             }
 
             for (int i = 1; i <= 31; i++)
@@ -57,24 +63,60 @@ namespace UnitTest
                 if (date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday)
                     continue;
                 _employee02.AddTimeLog(new TimeLog(date, 8));
-                _employee22.AddTimeLog(new TimeLog(date, 8));
             }
 
             for (int i = 1; i <= 30; i++)
             {
                 _employee03.AddTimeLog(new TimeLog(new DateTime(2019, 4, i), 8));
-                _employee23.AddTimeLog(new TimeLog(new DateTime(2019, 4, i), 8));
             }
 
             _employee04.AddTimeLog(new TimeLog(new DateTime(2019, 3, 1), 4));
             _employee04.AddTimeLog(new TimeLog(new DateTime(2019, 3, 31), 4));
 
-            _employee24.AddTimeLog(new TimeLog(new DateTime(2019, 3, 1), 4));
-            _employee24.AddTimeLog(new TimeLog(new DateTime(2019, 3, 31), 4));
+            #endregion CalculateEmployeeSalaryTest
 
-            _workingManagerWithEmployees = new Manager(4);
+            #region CalculateManagerSalaryTest
+
+            _employee211 = new Employee(4);
+            _employee212 = new Employee(4);
+            _employee213 = new Employee(4);
+            _employee214 = new Employee(4);
+
+            _employee221 = new Employee(4);
+            _employee222 = new Employee(4);
+            _employee223 = new Employee(4);
+            _employee224 = new Employee(4);
+
+            for (int i = 1; i <= 31; i++)
+            {
+               _employee211.AddTimeLog(new TimeLog(new DateTime(2019, 3, i), 8));
+               _employee221.AddTimeLog(new TimeLog(new DateTime(2019, 3, i), 8));
+            }
+
+            for (int i = 1; i <= 31; i++)
+            {
+                var date = new DateTime(2019, 3, i);
+                if (date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday)
+                    continue;
+                _employee212.AddTimeLog(new TimeLog(date, 8));
+                _employee222.AddTimeLog(new TimeLog(date, 8));
+            }
+
+            for (int i = 1; i <= 30; i++)
+            {
+                _employee213.AddTimeLog(new TimeLog(new DateTime(2019, 4, i), 8));
+                _employee223.AddTimeLog(new TimeLog(new DateTime(2019, 4, i), 8));
+            }
+
+            _employee214.AddTimeLog(new TimeLog(new DateTime(2019, 3, 1), 4));
+            _employee214.AddTimeLog(new TimeLog(new DateTime(2019, 3, 31), 4));
+
+            _employee224.AddTimeLog(new TimeLog(new DateTime(2019, 3, 1), 4));
+            _employee224.AddTimeLog(new TimeLog(new DateTime(2019, 3, 31), 4));
+
+            _workingManagerWithEmployees = new Manager(4, new List<BaseEmployee>() { _employee221, _employee222, _employee223, _employee224 });
             _workingManagerWithoutEmployees = new Manager(4);
-            _notWorkingManagerWithEmployees = new Manager(4);
+            _notWorkingManagerWithEmployees = new Manager(4, new List<BaseEmployee>() { _employee211, _employee212, _employee213, _employee214 });
             _notWorkingManagerWithoutEmployees = new Manager(4);
 
             for (int i = 1; i <= 31; i++)
@@ -86,15 +128,7 @@ namespace UnitTest
                 _workingManagerWithoutEmployees.AddTimeLog(new TimeLog(date, 8));
             }
 
-            _workingManagerWithEmployees.AddEmployee(_employee01);
-            _workingManagerWithEmployees.AddEmployee(_employee02);
-            _workingManagerWithEmployees.AddEmployee(_employee03);
-            _workingManagerWithEmployees.AddEmployee(_employee04);
-
-            _notWorkingManagerWithEmployees.AddEmployee(_employee21);
-            _notWorkingManagerWithEmployees.AddEmployee(_employee22);
-            _notWorkingManagerWithEmployees.AddEmployee(_employee23);
-            _notWorkingManagerWithEmployees.AddEmployee(_employee24);
+            #endregion CalculateManagerSalaryTest
 
             #region AddEmployeesToManagerTest
 
@@ -116,8 +150,11 @@ namespace UnitTest
 
             #endregion AddEmployeesToManagerTest
 
+            #region AddTimeLogTest
+
             _employee41 = new Employee(4);
 
+            #endregion AddTimeLogTest
         }
 
         [TestMethod]

@@ -6,17 +6,22 @@ namespace Accounting.BusinessObjects
     public class Manager:BaseEmployee
     {
         public const decimal Percent = 0.03m;
-        private List<BaseEmployee> EmployeeList;
+        private readonly List<BaseEmployee> _employeeList = new List<BaseEmployee>();
 
         public Manager(int salaryPerHour) : base(salaryPerHour)
         {
-            EmployeeList = new List<BaseEmployee>();
+        }
+
+        public Manager(int salaryPerHour, IEnumerable<BaseEmployee> employees) : base(salaryPerHour)
+        {
+            foreach (var employee in employees)
+                AddEmployee(employee);
         }
 
         public override decimal CalculateSalary(DateTime startDateTime, DateTime endDateTime)
         {
             decimal employeesSalarySum = 0;
-            foreach (var employee in EmployeeList)
+            foreach (var employee in _employeeList)
             {
                 employeesSalarySum += employee.CalculateSalary(startDateTime, endDateTime);
             }
@@ -26,9 +31,9 @@ namespace Accounting.BusinessObjects
 
         public void AddEmployee(BaseEmployee baseEmployee)
         {
-            if (!EmployeeList.Contains(baseEmployee) && baseEmployee != this)
+            if (!_employeeList.Contains(baseEmployee) && baseEmployee != this)
             {
-                EmployeeList.Add(baseEmployee);
+                _employeeList.Add(baseEmployee);
             }
         }
     }
