@@ -6,8 +6,6 @@ namespace Accounting.BusinessObjects
 {
     public class Manager : EmployeeBase, IManager
     {
-        public List<IEmployee> EmployeeList { get; }
-
         public Manager() : base()
         {
             EmployeeList = new List<IEmployee>();
@@ -17,5 +15,7 @@ namespace Accounting.BusinessObjects
         {
             EmployeeList = new List<IEmployee>();
         }
-    }
+
+		public List<IEmployee> EmployeeList { get; }
+	}
 }

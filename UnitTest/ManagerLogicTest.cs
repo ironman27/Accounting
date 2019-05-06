@@ -1,5 +1,5 @@
 ﻿using System;
-using Accounting.BusinessObjects;
+using System.Collections.Generic;
 using Accounting.Interfaces;
 using Accounting.Logic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -8,7 +8,7 @@ using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
 namespace UnitTest
 {
-    [TestClass]
+	[TestClass]
     public class ManagerLogicTest
     {
         #region Variables
@@ -19,75 +19,62 @@ namespace UnitTest
         int salaryPerHour = 4;
         int hours = 8;
         
-        private Mock<IEmployee> _employee211;
-        private Mock<IEmployee> _employee212;
-        private Mock<IEmployee> _employee213;
-        private Mock<IEmployee> _employee214;
+        private Mock<IEmployee> _juniorEmployee;
+        private Mock<IEmployee> _middleEmployee;
 
-        private Mock<IEmployee> _employee221;
-        private Mock<IEmployee> _employee222;
-        private Mock<IEmployee> _employee223;
-        private Mock<IEmployee> _employee224;
-
-        private Mock<IManager> _workingManagerWithEmployees;
+        private Mock<IManager> _manager;
 
         #endregion Variables
 
         [TestInitialize]
         public void Init()
         {
-           _employee211 = new Mock<IEmployee>();
+			_juniorEmployee = new Mock<IEmployee>();
+			_middleEmployee = new Mock<IEmployee>();
+			
+			List<ITimeLog> logTimeList211 = new List<ITimeLog>();
+			List<ITimeLog> logTimeList212 = new List<ITimeLog>();
+			List<ITimeLog> managerLogTimeList = new List<ITimeLog>();
 
-            _employee212 = new Mock<IEmployee>(salaryPerHour);
-            _employee213 = new Mock<IEmployee>(salaryPerHour);
-            _employee214 = new Mock<IEmployee>(salaryPerHour);
+			for (int i = startDateTime.Day; i <= endDateTime.Day; i++)
+			{
+				Mock<ITimeLog> timeLog = new Mock<ITimeLog>();
+				timeLog.SetupGet(tl => tl.DateTime).Returns(new DateTime(startDateTime.Year, startDateTime.Month, i));
+				timeLog.SetupGet(tl => tl.Hours).Returns(hours);
+				logTimeList211.Add(timeLog.Object);
 
-            _employee221 = new Mock<IEmployee>(salaryPerHour);
-            _employee222 = new Mock<IEmployee>(salaryPerHour);
-            _employee223 = new Mock<IEmployee>(salaryPerHour);
-            _employee224 = new Mock<IEmployee>(salaryPerHour);
+				timeLog = new Mock<ITimeLog>();
+				timeLog.SetupGet(tl => tl.DateTime).Returns(new DateTime(startDateTime.Year, startDateTime.Month, i));
+				timeLog.SetupGet(tl => tl.Hours).Returns(hours);
+				logTimeList212.Add(timeLog.Object);
 
-            for (int i = startDateTime.Day; i <= endDateTime.Day; i++)
-            {
-                _employee211.Object.TimeLogList.Add(new TimeLog(new DateTime(startDateTime.Year, startDateTime.Month, i), hours));
-                _employee221.Object.TimeLogList.Add(new TimeLog(new DateTime(startDateTime.Year, startDateTime.Month, i), hours));
-            }
+				var date = new DateTime(startDateTime.Year, startDateTime.Month, i);
+				if (date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday)
+					continue;
 
-            for (int i = startDateTime.Day; i <= endDateTime.Day; i++)
-            {
-                var date = new DateTime(startDateTime.Year, startDateTime.Month, i);
-                if (date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday)
-                    continue;
-                _employee212.Object.TimeLogList.Add(new TimeLog(date, hours));
-                _employee222.Object.TimeLogList.Add(new TimeLog(date, hours));
-            }
+				timeLog = new Mock<ITimeLog>();
+				timeLog.SetupGet(tl => tl.DateTime).Returns(new DateTime(startDateTime.Year, startDateTime.Month, i));
+				timeLog.SetupGet(tl => tl.Hours).Returns(hours);
+				managerLogTimeList.Add(timeLog.Object);			
+			}
 
-            _employee214.Object.TimeLogList.Add(new TimeLog(startDateTime, hours));
-            _employee214.Object.TimeLogList.Add(new TimeLog(endDateTime, hours));
+			_juniorEmployee.SetupGet(emp => emp.TimeLogList).Returns(logTimeList211);
+			_juniorEmployee.SetupGet(emp => emp.SalaryPerHour).Returns(salaryPerHour);
 
-            _employee224.Object.TimeLogList.Add(new TimeLog(startDateTime, hours));
-            _employee224.Object.TimeLogList.Add(new TimeLog(endDateTime, endDateTime.Day));
+			_middleEmployee.SetupGet(emp => emp.TimeLogList).Returns(logTimeList212);
+			_middleEmployee.SetupGet(emp => emp.SalaryPerHour).Returns(salaryPerHour);
 
-            _workingManagerWithEmployees = new Mock<IManager>(salaryPerHour);
-            _workingManagerWithEmployees.Object.EmployeeList.Add(_employee221.Object);
-            _workingManagerWithEmployees.Object.EmployeeList.Add(_employee222.Object);
-            _workingManagerWithEmployees.Object.EmployeeList.Add(_employee223.Object);
-            _workingManagerWithEmployees.Object.EmployeeList.Add(_employee224.Object);
-
-            for (int i = startDateTime.Day; i <= endDateTime.Day; i++)
-            {
-                var date = new DateTime(startDateTime.Year, startDateTime.Month, i);
-                if (date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday)
-                    continue;
-                _workingManagerWithEmployees.Object.TimeLogList.Add(new TimeLog(date, hours));
-            }
+			_manager = new Mock<IManager>();
+			_manager.SetupGet(emp => emp.TimeLogList).Returns(managerLogTimeList);
+			_manager.SetupGet(emp => emp.SalaryPerHour).Returns(salaryPerHour);
+			_manager.SetupGet(emp => emp.EmployeeList).Returns(new List<IEmployee>() { _juniorEmployee.Object, _middleEmployee.Object });
         }
         
         [TestMethod]
         public void CalculateManagerSalaryTest()
         {
-            decimal expected = 722.88m;
-            ManagerLogic managerLogic = new ManagerLogic(_workingManagerWithEmployees.Object);
+            decimal expected = 731.52m;
+            ManagerLogic managerLogic = new ManagerLogic(_manager.Object);
             decimal actual = managerLogic.CalculateSalary(startDateTime, endDateTime);
             Assert.AreEqual(expected, actual, "Manager`s salary calculation is wrong!");
         }
